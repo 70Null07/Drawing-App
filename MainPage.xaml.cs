@@ -1,5 +1,4 @@
-﻿using DrawingApp.CustomControls;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
@@ -7,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Graphics.Imaging;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
 using Windows.UI.Input.Inking;
@@ -29,19 +29,26 @@ namespace DrawingApp
     /// </summary>
     public sealed partial class MainPage : Page
     {
-
+        bool isLineSelected, isRectangleSelected, isEllipseSelected;
         private List<Line> lines;
+        private List<Windows.UI.Xaml.Shapes.Rectangle> rectangles;
+        private List<Ellipse> ellipses;
+
         private Line newLine = null;
+
         public MainPage()
         {
             this.InitializeComponent();
 
             lines = new List<Line>();
+            rectangles = new List<Windows.UI.Xaml.Shapes.Rectangle>();
+            ellipses = new List<Ellipse>();
+
+            isLineSelected = true;
 
             mainCanvas.PointerPressed += OnPointerPressed;
             mainCanvas.PointerReleased += OnPointerReleased;
             mainCanvas.PointerMoved += OnPointerMoved;
-
         }
         private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
@@ -109,11 +116,6 @@ namespace DrawingApp
                     }
                 }
 
-                //if (!lines.Any(l => l.IsSelected))
-                //{
-                //    newLine.IsSelected = true;
-                //    newLine = null;
-                //}
             }
 
             mainCanvas.ReleasePointerCaptures();
@@ -139,18 +141,83 @@ namespace DrawingApp
 
             var file = await openPicker.PickSingleFileAsync();
 
-            textBox.Text = file.Path;
-            string fn = file.Path;
             Image img = new Image();
-            // BitmapImage bitmapImage = new BitmapImage(new Uri(file.Path));
+
             BitmapImage bitmapImage = new BitmapImage();
             bitmapImage.DecodePixelHeight = (int) mainCanvas.Height;
             bitmapImage.DecodePixelWidth = (int) mainCanvas.Width;
-            IRandomAccessStream fileStream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
-            await bitmapImage.SetSourceAsync(fileStream);
+
+            using (IRandomAccessStream fileStream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read))
+            {
+                await bitmapImage.SetSourceAsync(fileStream);
+            }
+
             img.Source = bitmapImage;
             img.Stretch = Stretch.Fill;
             mainCanvas.Children.Add(img);
+        }
+
+        private async void saveItem_Click(object sender, RoutedEventArgs e)
+        {
+            RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap();
+            await renderTargetBitmap.RenderAsync(mainCanvas);
+
+            Image RenderedImage = new Image();
+            RenderedImage.Source = renderTargetBitmap;
+
+            var pixels = await renderTargetBitmap.GetPixelsAsync();
+            byte[] bytes = pixels.ToArray();
+
+            var savePicker = new FileSavePicker();
+            savePicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
+
+            savePicker.FileTypeChoices.Add("png, jpg", new List<string>() { ".png", ".png" });
+
+            savePicker.SuggestedFileName = "New Image";
+
+            var file = await savePicker.PickSaveFileAsync();
+
+            using (IRandomAccessStream saveStream = await file.OpenAsync(Windows.Storage.FileAccessMode.ReadWrite))
+            {
+                var encoder = await BitmapEncoder.CreateAsync(BitmapEncoder.JpegEncoderId, saveStream);
+
+                encoder.SetPixelData(BitmapPixelFormat.Bgra8,
+                    BitmapAlphaMode.Ignore,
+                    (uint)mainCanvas.ActualWidth,
+                    (uint)mainCanvas.ActualHeight,
+                    96, 96, bytes);
+
+                await encoder.FlushAsync();
+            }
+        }
+
+        private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            switch (comboBox.SelectedIndex)
+            {
+                case 0: 
+                    { 
+                        isLineSelected = true;
+                        isEllipseSelected = false;
+                        isRectangleSelected = false;
+                    }
+                    break;
+                case 1: 
+                    { 
+                        isRectangleSelected = true;
+                        isLineSelected = false;
+                        isEllipseSelected = false;
+                    }
+                    break;
+                case 2: 
+                    {   
+                        isEllipseSelected = true;
+                        isLineSelected = false;
+                        isRectangleSelected = false;
+                    }
+                    break;
+                default: break;
+            }
         }
     }
 }

@@ -34,13 +34,13 @@
                         <MenuFlyoutItem Text="Создать" Click="newItem_Click"/>
                         <MenuFlyoutItem Text="Открыть" Click="openItem_Click"/>
                     </MenuFlyoutSubItem>
-                    <MenuFlyoutItem Text="Сохранить"/>
+                    <MenuFlyoutItem Text="Сохранить" Click="saveItem_Click"/>
                     <MenuFlyoutItem Text="Выход"/>
                 </MenuFlyout>
             </Button.Flyout>
         </Button>
 
-        <ComboBox x:Name="comboBox" Margin="210,0,0,0" Width="210" Height="40">
+        <ComboBox x:Name="comboBox" Margin="210,0,0,0" Width="210" Height="40" SelectionChanged="comboBox_SelectionChanged">
             <ComboBoxItem Content="Кисть" IsSelected="True"/>
             <ComboBoxItem Content="Прямоугольник"/>
             <ComboBoxItem Content="Эллипс"/>
