@@ -15,35 +15,35 @@ using Windows.ApplicationModel;
 namespace DrawingApp.CustomControls
 {
 
-    class CustomLine : Canvas, INotifyPropertyChanged
+    class CustomLine : Canvas/*, INotifyPropertyChanged*/
     {
-        public event PropertyChangedEventHandler PropertyChanged;
+        //public event PropertyChangedEventHandler PropertyChanged;
 
-        private void OnPropertyChanged(string propertyName) =>
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        //private void OnPropertyChanged(string propertyName) =>
+        //    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 
-        private bool _isSelected;
+        //private bool _isSelected;
 
-        public bool IsSelected
-        {
-            get { return _isSelected; }
-            set
-            {
-                _isSelected = value;
-                OnPropertyChanged(nameof(IsSelected));
+        //public bool IsSelected
+        //{
+        //    get { return _isSelected; }
+        //    set
+        //    {
+        //        _isSelected = value;
+        //        OnPropertyChanged(nameof(IsSelected));
 
-                if (IsSelected)
-                {
-                    ellipse1.Visibility = Windows.UI.Xaml.Visibility.Visible;
-                    ellipse2.Visibility = Windows.UI.Xaml.Visibility.Visible;
-                }
-                else
-                {
-                    ellipse1.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-                    ellipse2.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
-                }
-            }
-        }
+        //        if (IsSelected)
+        //        {
+        //            ellipse1.Visibility = Windows.UI.Xaml.Visibility.Visible;
+        //            ellipse2.Visibility = Windows.UI.Xaml.Visibility.Visible;
+        //        }
+        //        else
+        //        {
+        //            ellipse1.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+        //            ellipse2.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+        //        }
+        //    }
+        //}
 
         public double X1
         {
@@ -52,7 +52,7 @@ namespace DrawingApp.CustomControls
             {
                 line.X1 = value;
 
-                Canvas.SetLeft(ellipse1, X1 - 5);
+                //Canvas.SetLeft(ellipse1, X1 - 5);
             }
         }
 
@@ -63,7 +63,7 @@ namespace DrawingApp.CustomControls
             {
                 line.Y1 = value;
 
-                Canvas.SetTop(ellipse1, Y1 - 5);
+                //Canvas.SetTop(ellipse1, Y1 - 5);
             }
         }
 
@@ -74,7 +74,7 @@ namespace DrawingApp.CustomControls
             {
                 line.X2 = value;
 
-                Canvas.SetLeft(ellipse2, X2 - 5);
+                //Canvas.SetLeft(ellipse2, X2 - 5);
             }
         }
 
@@ -85,45 +85,44 @@ namespace DrawingApp.CustomControls
             {
                 line.Y2 = value;
 
-                Canvas.SetTop(ellipse2, Y2 - 5);
+                //Canvas.SetTop(ellipse2, Y2 - 5);
             }
         }
 
         private Line line;
-        private Ellipse ellipse1, ellipse2;
+        //private Ellipse ellipse1, ellipse2;
         public CustomLine(ColorPicker colorpicker)
         {
 
             line = new Line()
             {
                 Stroke = new SolidColorBrush(colorpicker.Color),
-                //Stroke = new SolidColorBrush(Colors.Black),
                 StrokeThickness = 1,
             };
 
-            ellipse1 = new Ellipse()
-            {
-                Fill = new SolidColorBrush(Colors.AliceBlue),
-                Stroke = new SolidColorBrush(Colors.Blue),
-                StrokeThickness = 1,
-                Width = 10,
-                Height = 10,
-                Visibility = Windows.UI.Xaml.Visibility.Collapsed,
-            };
+            //ellipse1 = new Ellipse()
+            //{
+            //    Fill = new SolidColorBrush(Colors.AliceBlue),
+            //    Stroke = new SolidColorBrush(Colors.Blue),
+            //    StrokeThickness = 1,
+            //    Width = 10,
+            //    Height = 10,
+            //    Visibility = Windows.UI.Xaml.Visibility.Collapsed,
+            //};
 
-            ellipse2 = new Ellipse()
-            {
-                Fill = new SolidColorBrush(Colors.AliceBlue),
-                Stroke = new SolidColorBrush(Colors.Blue),
-                StrokeThickness = 1,
-                Width = 10,
-                Height = 10,
-                Visibility = Windows.UI.Xaml.Visibility.Collapsed,
-            };
+            //ellipse2 = new Ellipse()
+            //{
+            //    Fill = new SolidColorBrush(Colors.AliceBlue),
+            //    Stroke = new SolidColorBrush(Colors.Blue),
+            //    StrokeThickness = 1,
+            //    Width = 10,
+            //    Height = 10,
+            //    Visibility = Windows.UI.Xaml.Visibility.Collapsed,
+            //};
 
             this.Children.Add(line);
-            this.Children.Add(ellipse1);
-            this.Children.Add(ellipse2);
+            //this.Children.Add(ellipse1);
+            //this.Children.Add(ellipse2);
         }
     }
 }

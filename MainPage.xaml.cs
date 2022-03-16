@@ -7,13 +7,18 @@ using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Storage.Pickers;
+using Windows.Storage.Streams;
+using Windows.UI.Input.Inking;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Xaml.Media.Imaging;
 using Windows.UI.Xaml.Navigation;
+using Windows.UI.Xaml.Shapes;
 
 // Документацию по шаблону элемента "Пустая страница" см. по адресу https://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x419
 
@@ -25,20 +30,19 @@ namespace DrawingApp
     public sealed partial class MainPage : Page
     {
 
-        private List<CustomLine> lines;
-        private CustomLine newLine = null;
+        private List<Line> lines;
+        private Line newLine = null;
         public MainPage()
         {
             this.InitializeComponent();
 
-            lines = new List<CustomLine>();
+            lines = new List<Line>();
 
             mainCanvas.PointerPressed += OnPointerPressed;
             mainCanvas.PointerReleased += OnPointerReleased;
             mainCanvas.PointerMoved += OnPointerMoved;
 
         }
-
         private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
             e.Handled = true;
@@ -54,8 +58,11 @@ namespace DrawingApp
                     var x = ptrPoint.Position.X;
                     var y = ptrPoint.Position.Y;
 
-                    newLine = new CustomLine(colorPicker)
+                    newLine = new Line()
                     {
+                        Stroke = new SolidColorBrush(colorPicker.Color),
+                        //Stroke = LinearGradBrush,
+                        StrokeThickness = slider.Value,
                         X1 = x,
                         Y1 = y,
                         X2 = x,
@@ -102,14 +109,48 @@ namespace DrawingApp
                     }
                 }
 
-                if (!lines.Any(l => l.IsSelected))
-                {
-                    newLine.IsSelected = true;
-                    newLine = null;
-                }
+                //if (!lines.Any(l => l.IsSelected))
+                //{
+                //    newLine.IsSelected = true;
+                //    newLine = null;
+                //}
             }
 
             mainCanvas.ReleasePointerCaptures();
+        }
+
+        private void newItem_Click(object sender, RoutedEventArgs e)
+        {
+            mainCanvas.Children.Clear();
+        }
+
+        private async void openItem_Click(object sender, RoutedEventArgs e)
+        {
+            var openPicker = new FileOpenPicker();
+
+            openPicker.ViewMode = PickerViewMode.Thumbnail;
+
+            openPicker.SuggestedStartLocation = PickerLocationId.PicturesLibrary;
+
+            openPicker.CommitButtonText = "Открыть";
+
+            openPicker.FileTypeFilter.Add(".png");
+            openPicker.FileTypeFilter.Add(".jpg");
+
+            var file = await openPicker.PickSingleFileAsync();
+
+            textBox.Text = file.Path;
+            string fn = file.Path;
+            Image img = new Image();
+            // BitmapImage bitmapImage = new BitmapImage(new Uri(file.Path));
+            BitmapImage bitmapImage = new BitmapImage();
+            bitmapImage.DecodePixelHeight = (int) mainCanvas.Height;
+            bitmapImage.DecodePixelWidth = (int) mainCanvas.Width;
+            IRandomAccessStream fileStream = await file.OpenAsync(Windows.Storage.FileAccessMode.Read);
+            await bitmapImage.SetSourceAsync(fileStream);
+            img.Source = bitmapImage;
+            img.Stretch = Stretch.Fill;
+            mainCanvas.Children.Add(img);
         }
     }
 }

@@ -8,9 +8,43 @@
     mc:Ignorable="d"
     Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
-    <Grid>
-        <Canvas x:Name="mainCanvas"
-                Background="#FEEFEEEE" Margin="467,96,121,184" />
+    <Grid x:Name="RootGrid">
+
+        <Canvas x:Name="mainCanvas" Margin="521,96,0,0" Background="AliceBlue" Height="800" VerticalAlignment="Top" HorizontalAlignment="Left" Width="1200"/>
         <ColorPicker x:Name="colorPicker" x:FieldModifier="public" HorizontalAlignment="Left" Margin="42,96,0,0" VerticalAlignment="Top"/>
+
+        <Rectangle Width="200" Height="100" Margin="42,664,1258,236">
+            <Rectangle.Fill>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" x:Name="LinearGradBrush">
+                    <GradientStop Color="Yellow" Offset="0.0" x:Name="GradientStop1"/>
+                    <GradientStop Color="Red" Offset="0.25" x:Name="GradientStop2"/>
+                    <GradientStop Color="Blue" Offset="0.75" x:Name="GradientStop3"/>
+                    <GradientStop Color="LimeGreen" Offset="1.0" x:Name="GradientStop4"/>
+                </LinearGradientBrush>
+            </Rectangle.Fill>
+        </Rectangle>
+        <Slider x:Name="slider" Minimum="1" Maximum="15" HorizontalAlignment="Left" Margin="42,617,0,0" VerticalAlignment="Top" Width="156"/>
+
+        <TextBox x:Name="textBox" HorizontalAlignment="Left" Margin="215,617,0,0" TextWrapping="Wrap" Text="Brush Thickness" VerticalAlignment="Top"/>
+
+        <Button x:Name="button" Content="Файл" VerticalAlignment="Top" Height="40" Width="210" Background="#E55CB1FF">
+            <Button.Flyout>
+                <MenuFlyout Placement="BottomEdgeAlignedLeft">
+                    <MenuFlyoutSubItem Text="Проект">
+                        <MenuFlyoutItem Text="Создать" Click="newItem_Click"/>
+                        <MenuFlyoutItem Text="Открыть" Click="openItem_Click"/>
+                    </MenuFlyoutSubItem>
+                    <MenuFlyoutItem Text="Сохранить"/>
+                    <MenuFlyoutItem Text="Выход"/>
+                </MenuFlyout>
+            </Button.Flyout>
+        </Button>
+
+        <ComboBox x:Name="comboBox" Margin="210,0,0,0" Width="210" Height="40">
+            <ComboBoxItem Content="Кисть" IsSelected="True"/>
+            <ComboBoxItem Content="Прямоугольник"/>
+            <ComboBoxItem Content="Эллипс"/>
+        </ComboBox>
+
     </Grid>
 </Page>
