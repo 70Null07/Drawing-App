@@ -89,6 +89,10 @@ namespace DrawingApp
                             StrokeThickness = slider.Value,
                             Fill = newBrush,
                         };
+                        if (comboBox1.SelectedIndex == 2)
+                        {
+                            newRectangle.Stroke = LinearGradBrush;
+                        }
                         Canvas.SetLeft(newRectangle, x);
                         Canvas.SetTop(newRectangle, y);
                         mainCanvas.Children.Add(newRectangle);
@@ -101,6 +105,10 @@ namespace DrawingApp
                             StrokeThickness = slider.Value,
                             Fill = newBrush,
                         };
+                        if (comboBox1.SelectedIndex == 2)
+                        {
+                            newEllipse.Stroke = LinearGradBrush;
+                        }
                         Canvas.SetLeft(newEllipse, x);
                         Canvas.SetTop(newEllipse, y);
                         mainCanvas.Children.Add(newEllipse);
@@ -252,7 +260,10 @@ namespace DrawingApp
 
         private void colorPicker_ColorChanged(ColorPicker sender, ColorChangedEventArgs args)
         {
-            // newBrush = new SolidColorBrush(colorPicker.Color);
+            if (comboBox1.SelectedIndex == 1)
+            {
+                newBrush = new SolidColorBrush(colorPicker.Color);
+            }
         }
 
         private void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
