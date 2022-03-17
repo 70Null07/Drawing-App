@@ -9,7 +9,7 @@ using Windows.Foundation.Collections;
 using Windows.Graphics.Imaging;
 using Windows.Storage.Pickers;
 using Windows.Storage.Streams;
-using Windows.UI.Input.Inking;
+using Windows.UI.Input;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -29,75 +29,135 @@ namespace DrawingApp
     /// </summary>
     public sealed partial class MainPage : Page
     {
-        bool isLineSelected, isRectangleSelected, isEllipseSelected;
-        private List<Line> lines;
-        private List<Windows.UI.Xaml.Shapes.Rectangle> rectangles;
-        private List<Ellipse> ellipses;
+        bool isLineSelected = true, isRectangleSelected, isEllipseSelected;
 
         private Line newLine = null;
+        private Windows.UI.Xaml.Shapes.Rectangle newRectangle = null;
+        private Ellipse newEllipse = null;
+        private Brush newBrush = null;
+        private PointerPoint ptrPoint;
 
         public MainPage()
         {
             this.InitializeComponent();
 
-            lines = new List<Line>();
-            rectangles = new List<Windows.UI.Xaml.Shapes.Rectangle>();
-            ellipses = new List<Ellipse>();
-
-            isLineSelected = true;
+            gradrect.Visibility = Visibility.Collapsed;
 
             mainCanvas.PointerPressed += OnPointerPressed;
             mainCanvas.PointerReleased += OnPointerReleased;
             mainCanvas.PointerMoved += OnPointerMoved;
+
         }
+
         private void OnPointerPressed(object sender, PointerRoutedEventArgs e)
         {
             e.Handled = true;
 
-            var ptrPoint = e.GetCurrentPoint(mainCanvas);
+            ptrPoint = e.GetCurrentPoint(mainCanvas);
 
             if (ptrPoint.PointerDevice.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
             {
                 if (ptrPoint.Properties.IsLeftButtonPressed)
                 {
+
                     mainCanvas.CapturePointer(e.Pointer);
 
                     var x = ptrPoint.Position.X;
                     var y = ptrPoint.Position.Y;
 
-                    newLine = new Line()
+                    if (isLineSelected)
                     {
-                        Stroke = new SolidColorBrush(colorPicker.Color),
-                        //Stroke = LinearGradBrush,
-                        StrokeThickness = slider.Value,
-                        X1 = x,
-                        Y1 = y,
-                        X2 = x,
-                        Y2 = y,
-                    };
 
-                    lines.Add(newLine);
-                    mainCanvas.Children.Add(newLine);
-                }
-            }
-        }
-        private void OnPointerMoved(object sender, PointerRoutedEventArgs e)
-        {
-            e.Handled = true;
+                        newLine = new Line()
+                        {
+                            Stroke = new SolidColorBrush(colorPicker.Color),
+                            //Stroke = LinearGradBrush,
+                            StrokeThickness = slider.Value,
+                            X1 = x,
+                            Y1 = y,
+                            X2 = x,
+                            Y2 = y,
+                        };
 
-            var ptrPoint = e.GetCurrentPoint(mainCanvas);
-            if (ptrPoint.PointerDevice.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
-            {
-                if (ptrPoint.Properties.IsLeftButtonPressed)
-                {
-                    if (newLine != null)
+                        mainCanvas.Children.Add(newLine);
+                    }
+                    else if (isRectangleSelected)
                     {
-                        newLine.X2 = ptrPoint.Position.X;
-                        newLine.Y2 = ptrPoint.Position.Y;
+                        newRectangle = new Windows.UI.Xaml.Shapes.Rectangle
+                        {
+                            Stroke = new SolidColorBrush(colorPicker.Color),
+                            StrokeThickness = slider.Value,
+                            Fill = newBrush,
+                        };
+                        Canvas.SetLeft(newRectangle, x);
+                        Canvas.SetTop(newRectangle, y);
+                        mainCanvas.Children.Add(newRectangle);
+                    }
+                    else if (isEllipseSelected)
+                    {
+                        newEllipse = new Ellipse
+                        {
+                            Stroke = new SolidColorBrush(colorPicker.Color),
+                            StrokeThickness = slider.Value,
+                            Fill = newBrush,
+                        };
+                        Canvas.SetLeft(newEllipse, x);
+                        Canvas.SetTop(newEllipse, y);
+                        mainCanvas.Children.Add(newEllipse);
                     }
                 }
             }
         }
+
+        private void OnPointerMoved(object sender, PointerRoutedEventArgs e)
+        {
+            e.Handled = true;
+
+            var endPoint = e.GetCurrentPoint(mainCanvas);
+            if (endPoint.PointerDevice.PointerDeviceType == Windows.Devices.Input.PointerDeviceType.Mouse)
+            {
+                if (endPoint.Properties.IsLeftButtonPressed)
+                {
+                    if (isLineSelected)
+                    {
+                        if (newLine != null)
+                        {
+                            newLine.X2 = endPoint.Position.X;
+                            newLine.Y2 = endPoint.Position.Y;
+                        }
+                    }
+                    else if (isRectangleSelected)
+                    {
+                        var x = Math.Min(endPoint.Position.X, ptrPoint.Position.X);
+                        var y = Math.Min(endPoint.Position.Y, ptrPoint.Position.Y);
+
+                        var w = Math.Max(endPoint.Position.X, ptrPoint.Position.X) - x;
+                        var h = Math.Max(endPoint.Position.Y, ptrPoint.Position.Y) - y;
+
+                        newRectangle.Width = w;
+                        newRectangle.Height = h;
+
+                        Canvas.SetLeft(newRectangle, x);
+                        Canvas.SetTop(newRectangle, y);
+                    }
+                    else if (isEllipseSelected)
+                    {
+                        var x = Math.Min(endPoint.Position.X, ptrPoint.Position.X);
+                        var y = Math.Min(endPoint.Position.Y, ptrPoint.Position.Y);
+
+                        var w = Math.Max(endPoint.Position.X, ptrPoint.Position.X) - x;
+                        var h = Math.Max(endPoint.Position.Y, ptrPoint.Position.Y) - y;
+
+                        newEllipse.Width = w;
+                        newEllipse.Height = h;
+
+                        Canvas.SetLeft(newEllipse, x);
+                        Canvas.SetTop(newEllipse, y);
+                    }
+                }
+            }
+        }
+
         private void OnPointerReleased(object sender, PointerRoutedEventArgs e)
         {
             e.Handled = true;
@@ -109,7 +169,6 @@ namespace DrawingApp
                 {
                     if (newLine.X1 == newLine.X2 && newLine.Y1 == newLine.Y2)
                     {
-                        lines.Remove(newLine);
                         mainCanvas.Children.Remove(newLine);
                         newLine = null;
                         return;
@@ -191,6 +250,16 @@ namespace DrawingApp
             }
         }
 
+        private void colorPicker_ColorChanged(ColorPicker sender, ColorChangedEventArgs args)
+        {
+            // newBrush = new SolidColorBrush(colorPicker.Color);
+        }
+
+        private void MenuFlyoutItem_Click(object sender, RoutedEventArgs e)
+        {
+            Application.Current.Exit();
+        }
+
         private void comboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             switch (comboBox.SelectedIndex)
@@ -217,6 +286,30 @@ namespace DrawingApp
                     }
                     break;
                 default: break;
+            }
+        }
+
+        private void comboBox1_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            switch (comboBox1.SelectedIndex)
+            {
+                case 0:
+                    {
+                        Color color = Color.Transparent;
+                        newBrush = new SolidColorBrush(Windows.UI.Color.FromArgb(color.A, color.R, color.G, color.B));
+                    }
+                    break;
+                case 1:
+                    {
+                        newBrush = new SolidColorBrush(colorPicker.Color);
+                    }
+                    break;
+                case 2:
+                    {
+                        newBrush = LinearGradBrush;
+                    }
+                    break;
+                default : break;
             }
         }
     }

@@ -10,10 +10,13 @@
 
     <Grid x:Name="RootGrid">
 
-        <Canvas x:Name="mainCanvas" Margin="521,96,0,0" Background="AliceBlue" Height="800" VerticalAlignment="Top" HorizontalAlignment="Left" Width="1200"/>
-        <ColorPicker x:Name="colorPicker" x:FieldModifier="public" HorizontalAlignment="Left" Margin="42,96,0,0" VerticalAlignment="Top"/>
+        <Canvas x:Name="mainCanvas" Margin="451,96,269,184" Background="Transparent">
+            <Border BorderBrush="Black" BorderThickness="1" Height="800" Width="1200" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Canvas>
 
-        <Rectangle Width="200" Height="100" Margin="42,664,1258,236">
+        <ColorPicker x:Name="colorPicker" HorizontalAlignment="Left" Margin="42,96,0,0" VerticalAlignment="Top" ColorChanged="colorPicker_ColorChanged"/>
+
+        <Rectangle x:Name="gradrect" Width="200" Height="100" Margin="42,699,1678,281">
             <Rectangle.Fill>
                 <LinearGradientBrush StartPoint="0,0" EndPoint="1,1" x:Name="LinearGradBrush">
                     <GradientStop Color="Yellow" Offset="0.0" x:Name="GradientStop1"/>
@@ -23,6 +26,7 @@
                 </LinearGradientBrush>
             </Rectangle.Fill>
         </Rectangle>
+
         <Slider x:Name="slider" Minimum="1" Maximum="15" HorizontalAlignment="Left" Margin="42,617,0,0" VerticalAlignment="Top" Width="156"/>
 
         <TextBox x:Name="textBox" HorizontalAlignment="Left" Margin="215,617,0,0" TextWrapping="Wrap" Text="Brush Thickness" VerticalAlignment="Top"/>
@@ -35,7 +39,7 @@
                         <MenuFlyoutItem Text="Открыть" Click="openItem_Click"/>
                     </MenuFlyoutSubItem>
                     <MenuFlyoutItem Text="Сохранить" Click="saveItem_Click"/>
-                    <MenuFlyoutItem Text="Выход"/>
+                    <MenuFlyoutItem Text="Выход" Click="MenuFlyoutItem_Click"/>
                 </MenuFlyout>
             </Button.Flyout>
         </Button>
@@ -44,6 +48,11 @@
             <ComboBoxItem Content="Кисть" IsSelected="True"/>
             <ComboBoxItem Content="Прямоугольник"/>
             <ComboBoxItem Content="Эллипс"/>
+        </ComboBox>
+        <ComboBox x:Name="comboBox1" Margin="420,0,0,0" Width="210" Height="40" SelectionChanged="comboBox1_SelectionChanged">
+            <ComboBoxItem Content="Без заливки" IsSelected="True"/>
+            <ComboBoxItem Content="Сплошная заливка цветом"/>
+            <ComboBoxItem Content="Градиентная заливка"/>
         </ComboBox>
 
     </Grid>
